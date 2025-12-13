@@ -9,11 +9,10 @@ const port = process.env.PORT || 5000;
 // Middleware
 app.use(express.json());
 
-// CORS configuration
 app.use(cors({
   origin: [
-    "http://localhost:5173", // local frontend
-    "https://book-store-mern-app-taupe.vercel.app" // deployed frontend
+    "http://localhost:5173",
+    "https://book-store-mern-app-taupe.vercel.app"
   ],
   credentials: true
 }));
@@ -34,7 +33,7 @@ app.get("/", (req, res) => {
   res.send("Book Store Server is running!");
 });
 
-// Connect to MongoDB and start server
+// MongoDB
 async function main() {
   try {
     await mongoose.connect(process.env.DB_URL);
