@@ -13,17 +13,18 @@ const createAOrder = async (req, res) => {
 
 const getOrderByEmail = async (req, res) => {
   try {
-    const {email} = req.params;
-    const orders = await Order.find({email}).sort({createdAt: -1});
-    if(!orders) {
-      return res.status(404).json({ message: "Order not found" });
+    const { email } = req.params;
+    const trimmed = email?.trim();
+    if (!trimmed || trimmed === "undefined" || trimmed === "null") {
+      return res.status(200).json([]);
     }
+    const orders = await Order.find({ email: trimmed }).sort({ createdAt: -1 });
     res.status(200).json(orders);
   } catch (error) {
     console.error("Error fetching orders", error);
     res.status(500).json({ message: "Failed to fetch order" });
   }
-}
+};
 
 module.exports = {
   createAOrder,

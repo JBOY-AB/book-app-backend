@@ -6,18 +6,12 @@ require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-// Middleware
 app.use(express.json());
-
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://book-store-mern-app-taupe.vercel.app"
-  ],
-  credentials: true
+  origin: true,
+  credentials: true,
 }));
 
-// Routes
 const bookRoutes = require('./src/books/book.route');
 const orderRoutes = require('./src/orders/order.route');
 const userRoutes = require('./src/users/user.route');
@@ -28,12 +22,19 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/auth", userRoutes);
 app.use("/api/admin", adminRoutes);
 
-// Test route
+app.get("/test-db", async (req, res) => {
+  try {
+    const booksCount = await mongoose.connection.db.collection("books").countDocuments();
+    res.send(`MongoDB connected! Books in DB: ${booksCount}`);
+  } catch (err) {
+    res.status(500).send("MongoDB connection failed: " + err.message);
+  }
+});
+
 app.get("/", (req, res) => {
   res.send("Book Store Server is running!");
 });
 
-// MongoDB
 async function main() {
   try {
     await mongoose.connect(process.env.DB_URL);
@@ -42,7 +43,7 @@ async function main() {
       console.log(`Server running on port ${port}`);
     });
   } catch (err) {
-    console.error(err);
+    console.error("MongoDB connection error:", err); // full error, no .message
   }
 }
 
